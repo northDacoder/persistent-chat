@@ -1,0 +1,41 @@
+<html>
+<head>
+    <script src="https://cdn.firebase.com/js/client/1.0.11/firebase.js"></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+    <link rel="stylesheet" type="text/css" href="css/example.css">
+</head>
+<body>
+
+<h1 id="homeHeader">GangsterChat.io</h1>
+<div id='messagesDiv'></div>
+<input type='text' id='nameInput' placeholder='Hoodname'>
+<input type='text' id='messageInput' placeholder='Spoken word...'>
+<script>
+
+    // FIREBASE CREDENTIALS 
+    // URI TO ACCESS CHITTY CHAT REST 
+    // https://chittychat.firebaseio.com/ 
+
+
+    // var messagesRef = new Firebase('https://ket7jzfwha0.firebaseio-demo.com/');
+    var chittychat = new Firebase('https://chittychat.firebaseio.com/');
+
+    // When the user presses enter on the message input, write the message to firebase.
+    $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+            var name = $('#nameInput').val();
+            var text = $('#messageInput').val();
+            chittychat.push({name:name, text:text});
+            $('#messageInput').val('');
+        }
+    });
+
+    // Add a callback that is triggered for each chat message.
+    chittychat.limit(10).on('child_added', function (snapshot) {
+        var message = snapshot.val();
+        $('<div/>').text(message.text).prepend($('<em/>').text(message.name+': ')).appendTo($('#messagesDiv'));
+        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+    });
+</script>
+</body>
+</html>
